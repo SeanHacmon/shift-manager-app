@@ -30,8 +30,20 @@ class User:
                              self.password.encode('utf-8'))
     
     def saveUserInDB(self):
-        pass
+        user_data = {
+            'firstName': self.firstName,
+            'lastName': self.lastName,
+            'email': self.email,
+            'password': self.password,
+            'veteran': self.veteran,
+            'department': self.department,
+            'availableDays': self.availableDays,
+            'role': self.role
+        }
+        result = users_collection.insert_one(user_data)
+        return result.inserted_id
 
-    def findUserByEmail(self):
-        pass
+    @staticmethod
+    def findUserByEmail(email:str):
+        return users_collection.find_one({'email': email})
 
