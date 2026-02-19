@@ -1,11 +1,14 @@
-import pymongo
 import bcrypt
-import datetime
+import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
 
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['shift-manager']
-users_collection = db['users']
+load_dotenv()
+mongodb_uri = os.getenv('MONGODB_URI')
+client = MongoClient(mongodb_uri)
+db = client['ShiftManagerApp']
+users_collection = db['Bartenders']
 
 class User:
 
@@ -41,9 +44,17 @@ class User:
             'role': self.role
         }
         result = users_collection.insert_one(user_data)
+        self._id = result.inserted_id 
         return result.inserted_id
 
     @staticmethod
     def findUserByEmail(email:str):
         return users_collection.find_one({'email': email})
 
+
+    @staticmethod
+    def delete_from_db(self):
+        """Delete this user from database using self._id"""
+        from bson.objectid import ObjectId
+        result = users_collection.delete_one({'_id': ObjectId(self._id)})
+        return result.deleted_count > 0

@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
-
+from models.user import User
 load_dotenv()
 
 mongodb_uri = os.getenv('MONGODB_URI')
@@ -19,28 +19,23 @@ try:
     print(f"✅ Database 'ShiftManagerApp' found!")
     
     # Get users collection
-    users_collection = db['users']
+    users_collection = db['Bartenders']
     print(f"✅ Users collection ready!")
     
     # CREATE: Insert a test user
     print("\n--- CREATING TEST USER ---")
-    test_user = {
-        'firstName': 'John',
-        'lastName': 'Doe',
-        'email': 'john@test.com',
-        'password': 'hashed_password_123',
-        'veteran': True,
-        'department': 'Sales',
-        'availableDays': [1, 2, 3, 4, 5],
-        'role': 'user'
-    }
+    user = User(
+        'Niv','Dahan','Niv@test.com','hashed_password_123',True,
+        'Bartender', [1, 2, 3, 4, 5],'admin'
+    )
+    print("\n--- SAVING TEST USER ---")
+    id = user.saveUserInDB()
     
-    result = users_collection.insert_one(test_user)
-    print(f"✅ User created with ID: {result.inserted_id}")
+    print(f"✅ User created with ID: {id}")
     
     # READ: Find the user
     print("\n--- READING TEST USER ---")
-    found_user = users_collection.find_one({'email': 'john@test.com'})
+    found_user = user.findUserByEmail('Niv@test.com')
     if found_user:
         print(f"✅ Found user: {found_user['firstName']} {found_user['lastName']}")
         print(f"   Email: {found_user['email']}")
@@ -60,8 +55,8 @@ try:
     
     # DELETE: Remove the test user
     print("\n--- DELETING TEST USER ---")
-    delete_result = users_collection.delete_one({'email': 'john@test.com'})
-    print(f"✅ Deleted {delete_result.deleted_count} user(s)")
+    delete_result = user.delete_from_db(user)
+    print(f"✅ Deleted {delete_result} user(s)")
     
     # VERIFY: Check it's gone
     print("\n--- VERIFYING DELETION ---")
