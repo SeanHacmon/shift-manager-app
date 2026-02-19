@@ -13,14 +13,14 @@ users_collection = db['Bartenders']
 class User:
 
     def __init__(self,firstName, lastName, email, password,
-                 veteran, department, availableDays, role) -> None:
+                 veteran, department, availability, role) -> None:
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.password = self.hash_password(password)
         self.veteran = veteran
         self.department = department
-        self.availableDays = availableDays
+        self.availability = availability
         self.role = role
 
     def hash_password(self, password:str) -> str:
