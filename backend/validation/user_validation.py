@@ -1,5 +1,6 @@
 from models.user import users_collection
 from bson.objectid import ObjectId
+import bcrypt
 
 VALID_DEPARTMENTS = ['Bartender', 'Waiter']
 VALID_ROLES = ['manager', 'employee']
@@ -86,4 +87,17 @@ def validate_login_fields(data: dict):
     for field in ['email', 'password']:
         if field not in data or not data[field]:
             return False, f"Missing required field: '{field}'"
+    return True, None
+
+def validate_password(plain_password: str, hashed_password: str):
+    """
+    Compares a plain text password against the hashed one stored in DB.
+    Returns (True, None) or (False, error_message).
+    """
+    is_match = bcrypt.checkpw(
+        plain_password.encode('utf-8'),
+        hashed_password.encode('utf-8')
+    )
+    if not is_match:
+        return False, "Invalid password"
     return True, None
