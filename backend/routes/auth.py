@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from validation.user_validation import *
 from flask import Blueprint, request, jsonify
 from models.user import *
+import jwt
 
 # load_dotenv()
 
@@ -50,8 +51,9 @@ def login():
     is_match, error = validate_password(data['password'], user['password'])
     if not is_match:
         return jsonify({'error': error}), 401
-
-    return jsonify({'message': 'User logged in successfully'}), 200
+    
+    token = jwt.encode({'user_id': str(user['_id'])}, os.getenv('JWT_SECRET'), algorithm='HS256')
+    return jsonify({'message': 'User logged in successfully', 'token': token}), 200
 
 
 @auth_bp.route('/user', methods=['GET'])
